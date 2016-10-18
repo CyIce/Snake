@@ -16,26 +16,34 @@ HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 int map[100][100] = { 0 };
 int maxX = 40, maxY = 21;                    //地图大小；
 int s_size=0;                                //snake的长度；
+bool gameStatus = true;                      //用于碰撞检测；
+
 Snake head, tail;
 Snake snake[100];                            //snake的身体;
 Snake dir;                                   //表示键入的方向；
+Snake foodCoor;                              //用于表示食物的坐标；
 
 void makeWall(int length, int breadth);      //制作游戏边界；
 void direction(int ch);                      //判断键入的方向并传出方向代号；
 void gotoxy(short x,short y);                //切换光标位置；
 void initial();                              //初始化snake；
-void move();						 //让snake自由移动；
+void move();						         //让snake自由移动；
+void food();                                 //随机生成食物；
+bool eat();                                  //吃掉食物；
 
 int main()
 {
+	srand((unsigned)time(NULL));
 	int i,ch,startTime,nowTime;
-	bool gameStatus = true;
+
 	makeWall(maxX-1, maxY-2);
 	gotoxy(10,5);       
+
+
 	initial();
 	startTime = clock()%1000;
 
-	while (gameStatus)
+	while (gameStatus)                                   //检测是否发生碰撞；
 	{
 		nowTime = clock() % 1000;
 
@@ -51,6 +59,10 @@ int main()
 		}
 			
 	}
+
+	gotoxy(1, maxY+1);                               //移动光标到左下角；
+	cout << "GameOver" << endl;                      //提示游戏结束；
+	
 
 
 	system("pause");
@@ -131,6 +143,8 @@ void initial()
 	tail = snake[3];
 
 	cout << char(002) << char(002) << char(002);
+
+	food();                                        //随机生成食物；
 }
 
 void move()
@@ -142,13 +156,43 @@ void move()
 	gotoxy(snake[0].x, snake[0].y);
 	cout << char(002);
 	gotoxy(tail.x, tail.y);
-	cout << "5";
+
+	if(!eat())
+		cout << " ";
 
 	for (i = s_size;i>=1;--i)
 		snake[i] = snake[i - 1];
+
+	if (map[snake[1].x][snake[1].y] == 1)
+		gameStatus = false;
 
 	map[snake[1].x][snake[1].y] = 1;
 	map[tail.x][tail.y] = 0;
 
 	tail = snake[s_size];
+
+	if (eat())
+		++s_size;
+}
+
+void food()
+{
+	foodCoor.x = (rand() % (maxX - 1) + 1);
+	foodCoor.y = (rand() % (maxY - 1) + 1);
+
+	gotoxy(foodCoor.x, foodCoor.y);
+
+	cout << char(001);
+}
+
+bool eat()
+{
+	if (foodCoor.x == snake[1].x&&foodCoor.y == snake[1].y)
+	{
+		snake[s_size + 1] = snake[s_size];
+
+		return true;
+	}
+	else
+		return false;
 }
