@@ -37,7 +37,8 @@ int main()
 	int i,ch,startTime,nowTime;
 
 	makeWall(maxX-1, maxY-2);
-	gotoxy(10,5);       
+	gotoxy(10,5);   
+
 
 
 	initial();
@@ -157,8 +158,10 @@ void move()
 	cout << char(002);
 	gotoxy(tail.x, tail.y);
 
-	if(!eat())
+	if (!eat())
 		cout << " ";
+	else
+		++s_size;
 
 	for (i = s_size;i>=1;--i)
 		snake[i] = snake[i - 1];
@@ -171,14 +174,18 @@ void move()
 
 	tail = snake[s_size];
 
-	if (eat())
-		++s_size;
+	snake[0].x = 0;                         //÷ÿ÷√£ª
+	snake[0].y = 0; 
 }
 
 void food()
 {
-	foodCoor.x = (rand() % (maxX - 1) + 1);
-	foodCoor.y = (rand() % (maxY - 1) + 1);
+	do
+	{ 
+		foodCoor.x = (rand() % (maxX - 2) + 2);
+		foodCoor.y = (rand() % (maxY - 2) + 2);
+	} while (map[foodCoor.x][foodCoor.y] == 1);
+
 
 	gotoxy(foodCoor.x, foodCoor.y);
 
@@ -187,9 +194,11 @@ void food()
 
 bool eat()
 {
-	if (foodCoor.x == snake[1].x&&foodCoor.y == snake[1].y)
+	if (foodCoor.x == snake[0].x&&foodCoor.y == snake[0].y)
 	{
 		snake[s_size + 1] = snake[s_size];
+
+		food();
 
 		return true;
 	}
