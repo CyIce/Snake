@@ -33,8 +33,9 @@ bool eat();                                  //吃掉食物；
 
 int main()
 {
+
 	srand((unsigned)time(NULL));
-	int i,ch,startTime,nowTime;
+	int ch;
 
 	makeWall(maxX-1, maxY-2);
 	gotoxy(10,5);   
@@ -42,22 +43,18 @@ int main()
 
 
 	initial();
-	startTime = clock()%1000;
 
 	while (gameStatus)                                   //检测是否发生碰撞；
 	{
-		nowTime = clock() % 1000;
 
-		if (ch=_getch())
+		if (_kbhit())
 		{
+			ch = _getch();
 			direction(ch);
 		}
 
-		if (startTime = nowTime + 1)
-		{
-			startTime = clock() % 1000;
 			move();
-		}
+			Sleep(300);
 			
 	}
 
@@ -108,7 +105,10 @@ void makeWall(int length, int breadth)
 
 void direction(int ch)
 {
-	if(ch=_getch())
+	ch = _getch()
+	//if (abs(ch - 72) == 8 || abs(ch - 75) == 2)
+	//	return;
+
 	switch (ch)
 	{
 		case 72:	dir.x = 0, dir.y = -1;  break;   //上；
@@ -130,6 +130,9 @@ void gotoxy(short x, short y)
 
 void initial()
 {
+	dir.x = 1;
+	dir.y = 0;
+
 	s_size = 3;
 	snake[3].x = 10;
 	snake[2].x = 11;
