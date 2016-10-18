@@ -2,24 +2,55 @@
 #include<cstdlib>
 #include<conio.h>
 #include<Windows.h>
+#include<ctime>
+using namespace std;
+
+struct Snake
+{
+	int x;
+	int y;
+};
 
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 
 int map[100][100] = { 0 };
-int maxX = 40, maxY = 21;
+int maxX = 40, maxY = 21;                    //地图大小；
+int s_size=0;                                //snake的长度；
+Snake head, tail;
+Snake snake[100];                            //snake的身体;
+Snake dir;                                   //表示键入的方向；
 
 void makeWall(int length, int breadth);      //制作游戏边界；
-int direction(char ch);                      //判断键入的方向并传出方向代号；
+void direction(int ch);                      //判断键入的方向并传出方向代号；
 void gotoxy(short x,short y);                //切换光标位置；
+void initial();                              //初始化snake；
+void move();						 //让snake自由移动；
 
-using namespace std;
 int main()
 {
-	int i;
-
+	int i,ch,startTime,nowTime;
+	bool gameStatus = true;
 	makeWall(maxX-1, maxY-2);
-	gotoxy(10,5);                       
+	gotoxy(10,5);       
+	initial();
+	startTime = clock()%1000;
 
+	while (gameStatus)
+	{
+		nowTime = clock() % 1000;
+
+		if (ch=_getch())
+		{
+			direction(ch);
+		}
+
+		if (startTime = nowTime + 1)
+		{
+			startTime = clock() % 1000;
+			move();
+		}
+			
+	}
 
 
 	system("pause");
@@ -62,14 +93,15 @@ void makeWall(int length, int breadth)
 
 }
 
-int direction(char ch)
+void direction(int ch)
 {
+	if(ch=_getch())
 	switch (ch)
 	{
-		case 72:	return 1;    //上；
-		case 80:	return 2;    //下；
-		case 75:	return 3;    //左；
-		case 77:	return 4;    //右；
+		case 72:	dir.x = 0, dir.y = -1;  break;   //上；
+		case 80:	dir.x = 0, dir.y = 1;   break;   //下；
+		case 75:	dir.x = -1, dir.y = 0;  break;   //左；
+		case 77:	dir.x = 1, dir.y = 0;   break;   //右；
 		default:	break;
 	}
 }
@@ -81,4 +113,42 @@ void gotoxy(short x, short y)
 	CONSOLE_CURSOR_INFO cursor_info = { 1,0 };
 	SetConsoleCursorInfo(hout, &cursor_info);                            //隐藏光标；
 
+}
+
+void initial()
+{
+	s_size = 3;
+	snake[3].x = 10;
+	snake[2].x = 11;
+	snake[1].x = 12;
+	snake[1].y = snake[2].y = snake[3].y = 5;
+
+	map[snake[1].x][snake[1].y] = 1;
+	map[snake[2].x][snake[2].y] = 1;
+	map[snake[3].x][snake[3].y] = 1;
+
+	head = snake[1];
+	tail = snake[3];
+
+	cout << char(002) << char(002) << char(002);
+}
+
+void move()
+{
+	int i;
+	snake[0].x = head.x + dir.x;
+	snake[0].y = head.y + dir.y;
+	head = snake[0];
+	gotoxy(snake[0].x, snake[0].y);
+	cout << char(002);
+	gotoxy(tail.x, tail.y);
+	cout << "5";
+
+	for (i = s_size;i>=1;--i)
+		snake[i] = snake[i - 1];
+
+	map[snake[1].x][snake[1].y] = 1;
+	map[tail.x][tail.y] = 0;
+
+	tail = snake[s_size];
 }
