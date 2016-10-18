@@ -16,6 +16,8 @@ HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 int map[100][100] = { 0 };
 int maxX = 40, maxY = 21;                    //地图大小；
 int s_size=0;                                //snake的长度；
+int lastDir;                                 //记录上一次的运动方向；
+int speed = 300;                             //表示snake运动的速度；
 bool gameStatus = true;                      //用于碰撞检测；
 
 Snake head, tail;
@@ -29,13 +31,15 @@ void gotoxy(short x,short y);                //切换光标位置；
 void initial();                              //初始化snake；
 void move();						         //让snake自由移动；
 void food();                                 //随机生成食物；
+void addSpeed(int s);                       //加速；
 bool eat();                                  //吃掉食物；
+
 
 int main()
 {
+	int ch;
 
 	srand((unsigned)time(NULL));
-	int ch;
 
 	makeWall(maxX-1, maxY-2);
 	gotoxy(10,5);   
@@ -52,9 +56,13 @@ int main()
 			ch = _getch();
 			direction(ch);
 		}
+		else
+		{
+			addSpeed(300);
+		}
 
 			move();
-			Sleep(300);
+			Sleep(speed);
 			
 	}
 
@@ -105,9 +113,16 @@ void makeWall(int length, int breadth)
 
 void direction(int ch)
 {
-	ch = _getch()
-	//if (abs(ch - 72) == 8 || abs(ch - 75) == 2)
-	//	return;
+	ch = _getch();
+	if (abs(ch - lastDir) == 8 || abs(ch - lastDir) == 2)
+		return;
+	if (ch == lastDir)
+	{
+		addSpeed(100);
+	}
+	else				 addSpeed(300);
+
+	lastDir = ch;
 
 	switch (ch)
 	{
@@ -132,6 +147,7 @@ void initial()
 {
 	dir.x = 1;
 	dir.y = 0;
+	lastDir = 77;
 
 	s_size = 3;
 	snake[3].x = 10;
@@ -207,4 +223,9 @@ bool eat()
 	}
 	else
 		return false;
+}
+
+void addSpeed(int s)
+{
+	speed = s;
 }
